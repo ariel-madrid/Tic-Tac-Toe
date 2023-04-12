@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 
 function Square ({value, clickMe}:{value:string, clickMe:()=> void}): JSX.Element {
-    return <button className="border-2 w-32 h-32 m-1" onClick={clickMe}>{value}</button>
+    return <button className="border-2 w-32 h-32 m-1 shadow-md hover:bg-slate-400 rounded-lg" onClick={clickMe}>{value}</button>
 }
 
 function Game(): JSX.Element
@@ -11,54 +11,58 @@ function Game(): JSX.Element
     const [winner, setWinner] = useState(false)
     function isWinner()
     {
-        const posToWin = [[0,1,2], [0,3,6],[2,5,8],[6,7,8],[1,4,7],[0,4,8],[2,4,6]]
-
-        posToWin.forEach(pos => {
-            if (squares[pos[0]] && squares[pos[1]] === 'X')
-            {
-                if (squares[pos[2]] === 'X')
-                {
-                    alert("Winner X")
-                    setWinner(true)
-                }
-                
-            }else if (squares[pos[0]] && squares[pos[1]] === "O"){
-                if (squares[pos[2]] === "O")
-                {
-                    alert("Winner O")
-                    setWinner(true)
-                }
+        const posToWin = [[0,1,2], [0,3,6],[2,5,8],[6,7,8],[1,4,7],[0,4,8],[2,4,6],[3,4,5]]
+        for (let i=0; i<8; i++)
+        {
+            let tmp:string[] = []
+            tmp.push(squares[posToWin[i][0]])
+            tmp.push(squares[posToWin[i][1]])
+            tmp.push(squares[posToWin[i][2]])
+            
+            if (tmp.every(val => val === tmp[0]) && tmp[0]!==null){
+                alert("Winner is: "+tmp[0])
+                setWinner(true)
+                return winner
             }
-        })
+        }
         return winner;
     }
 
     function handleClick(i:number) {
-        if (squares[i] || isWinner())
+        if (!isWinner())
         {
-            return 
-        }
-        const nextSquares = squares.slice()
-        if (xIsNext)
-        {
-            nextSquares[i] = "X"
-            setXIsNext(false)
+            if (squares[i])
+            {
+                return 
+            }
+            const nextSquares = squares.slice()
+            if (xIsNext)
+            {
+                nextSquares[i] = "X"
+                setXIsNext(false)
+            }else{
+                nextSquares[i] = "O"
+                setXIsNext(true)
+            }
+            
+            setSquares(nextSquares)
         }else{
-            nextSquares[i] = "O"
-            setXIsNext(true)
+            alert("El juego continua")
+            return
         }
-        
-        setSquares(nextSquares)
+
     }
 
     function restartBoard()
     {
         const newBoard = Array(9).fill(null)
         setSquares(newBoard)
+        setXIsNext(true)
+        setWinner(false)
     }
 
     return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen bg-red-50">
         <h1 className="font-bold mb-10 text-3xl">Tic Tac Toe Game</h1>
         <div className="flex flex-row">
             <Square value={squares[0]} clickMe={()=> handleClick(0)}></Square>
